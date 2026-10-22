@@ -876,9 +876,9 @@ const PERMISSOES = {
 
 // Senhas em texto apenas para demo local — em produção usar hash no servidor
 const USUARIOS_INICIAIS = [
-  { id: 'U-01', nome: 'Wellington Felicio Vieira', email: 'pastor@iarcristo.local', senha: 'pastor123', perfil: 'pastor', ativo: true, membroId: 'MRC-0001' },
-  { id: 'U-02', nome: 'Secretaria da Igreja', email: 'secretaria@iarcristo.local', senha: 'secretaria123', perfil: 'secretaria', ativo: true, membroId: '' },
-  { id: 'U-03', nome: 'Administrador do Sistema', email: 'admin@iarcristo.local', senha: 'admin123', perfil: 'superadmin', ativo: true, membroId: '' },
+  { id: 'U-01', nome: 'Wellington Felicio Vieira', email: 'pastor@rcristo', senha: 'pastor123', perfil: 'pastor', ativo: true, membroId: 'MRC-0001' },
+  { id: 'U-02', nome: 'Secretaria da Igreja', email: 'secretaria@rcristo', senha: 'secretaria123', perfil: 'secretaria', ativo: true, membroId: '' },
+  { id: 'U-03', nome: 'Administrador do Sistema', email: 'admin@rcristo', senha: 'admin123', perfil: 'superadmin', ativo: true, membroId: '' },
   { id: 'U-04', nome: 'Consulta', email: 'consulta@iarcristo.local', senha: 'consulta123', perfil: 'consulta', ativo: true, membroId: '' }
 ];
 
