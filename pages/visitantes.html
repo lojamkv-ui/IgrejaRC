@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F7941D">
+  <link rel="icon" href="../assets/brand/favicon.svg" type="image/svg+xml">
+  <title>Visitantes | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item"><img src="../assets/icons/dashboard.svg" alt="" class="nav-icon" width="18" height="18"> Dashboard</a>
+          <a href="membros.html" class="nav-item"><img src="../assets/icons/membros.svg" alt="" class="nav-icon" width="18" height="18"> Membros</a>
+          <a href="visitantes.html" class="nav-item active"><img src="../assets/icons/visitantes.svg" alt="" class="nav-icon" width="18" height="18"> Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item"><img src="../assets/icons/departamentos.svg" alt="" class="nav-icon" width="18" height="18"> Departamentos</a>
+          <a href="familias.html" class="nav-item"><img src="../assets/icons/familias.svg" alt="" class="nav-icon" width="18" height="18"> Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item"><img src="../assets/icons/agenda.svg" alt="" class="nav-icon" width="18" height="18"> Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item"><img src="../assets/icons/relatorios.svg" alt="" class="nav-icon" width="18" height="18"> Relatórios</a>
+        </div>
+</nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">WF</div>
+          <div class="user-details">
+            <div class="user-name">Wellington F. Vieira</div>
+            <div class="user-role">Pastor Presidente</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Visitantes e Integração</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="abrirForm()">+ Novo Visitante</button>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <div class="card" id="formCard" style="display:none;margin-bottom:24px">
+          <div class="card-header">
+            <h2 class="card-title">Cadastrar Visitante</h2>
+            <button class="btn btn-sm btn-secondary" onclick="document.getElementById('formCard').style.display='none'">Fechar</button>
+          </div>
+          <div class="card-body">
+            <form onsubmit="salvarVis(event)">
+              
+              <div class="form-section" style="margin-bottom:12px">
+                <label style="font-weight:600;font-size:0.8rem;display:block;margin-bottom:8px">Foto (opcional)</label>
+                <div class="flex items-center gap-3" style="flex-wrap:wrap">
+                  <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;background:var(--slate-100);border:2px solid var(--border);display:flex;align-items:center;justify-content:center">
+                    <img id="vFotoPreview" src="" style="width:100%;height:100%;object-fit:cover;display:none" alt="">
+                    <span id="vFotoPh" class="text-muted" style="font-size:0.7rem">Sem foto</span>
+                  </div>
+                  <div>
+                    <input type="hidden" id="vFoto">
+                    <label class="btn btn-sm btn-secondary" style="cursor:pointer;margin:0 6px 6px 0">Arquivo<input type="file" id="vFotoFile" accept="image/*" style="display:none" onchange="onVFoto(event)"></label>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="abrirCamV()">Câmera</button>
+                    <button type="button" class="btn btn-sm btn-ghost" onclick="remVFoto()">Remover</button>
+                    <div id="vCamBox" style="display:none;margin-top:8px">
+                      <video id="vCamVideo" autoplay playsinline style="max-width:240px;border-radius:10px;background:#000"></video>
+                      <div class="flex gap-2" style="margin-top:6px">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="capVFoto()">Capturar</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="fechaCamV()">Cancelar</button>
+                      </div>
+                      <canvas id="vCamCanvas" style="display:none"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Nome *</label><input id="vNome" class="form-control" required></div>
+                <div class="form-group"><label>Telefone</label><input id="vTel" class="form-control" placeholder="(62) 99999-9999"></div>
+                <div class="form-group"><label>E-mail</label><input id="vEmail" class="form-control" type="email"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Data da visita</label><input id="vData" type="date" class="form-control"></div>
+                <div class="form-group"><label>Culto / Evento</label><input id="vCulto" class="form-control" placeholder="Culto de Celebração"></div>
+                <div class="form-group"><label>Origem</label>
+                  <select id="vOrigem" class="form-control">
+                    <option>Convite de amigo</option>
+                    <option>Redes sociais</option>
+                    <option>Evangelismo</option>
+                    <option>Família</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Responsável pelo acompanhamento</label>
+                  <select id="vResp" class="form-control"><option value="">—</option></select>
+                </div>
+                <div class="form-group"><label>Interesse</label>
+                  <select id="vInteresse" class="form-control">
+                    <option>Conhecer a igreja</option>
+                    <option>Classe de integração</option>
+                    <option>Batismo</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:8px;padding-top:24px">
+                  <input type="checkbox" id="vConsent" checked> <label for="vConsent">Autoriza contato</label>
+                </div>
+              </div>
+              <div class="form-group"><label>Observações</label><textarea id="vObs" class="form-control" rows="2"></textarea></div>
+              <button type="submit" class="btn btn-primary">Salvar Visitante</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Lista de Visitantes <span id="totalVis" class="badge badge-gray"></span></h2>
+            <select id="filtroSit" class="form-control" style="width:auto" onchange="render()">
+              <option value="">Todas as situações</option>
+              <option>Novo</option>
+              <option>Em acompanhamento</option>
+              <option>Convertido em membro</option>
+              <option>Sem retorno</option>
+            </select>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Data visita</th>
+                    <th>Situação</th>
+                    <th>Responsável</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaVis"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    function nomeM(id) {
+      const m = IARCristo.getMembro(id);
+      return m ? m.nome : '—';
+    }
+    function badgeSit(s) {
+      const map = { 'Novo': 'badge-info', 'Em acompanhamento': 'badge-warning', 'Convertido em membro': 'badge-success', 'Sem retorno': 'badge-gray' };
+      return map[s] || 'badge-gray';
+    }
+
+    function abrirForm() {
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('vData').value = new Date().toISOString().slice(0,10);
+      document.getElementById('vFoto').value = '';
+      showVFoto('');
+      fechaCamV();
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function salvarVis(e) {
+      e.preventDefault();
+      IARCristo.adicionarVisitante({
+        nome: document.getElementById('vNome').value.trim(),
+        telefone: document.getElementById('vTel').value,
+        email: document.getElementById('vEmail').value,
+        dataVisita: document.getElementById('vData').value,
+        cultoEvento: document.getElementById('vCulto').value,
+        origem: document.getElementById('vOrigem').value,
+        responsavelId: document.getElementById('vResp').value,
+        interesse: document.getElementById('vInteresse').value,
+        consentimentoContato: document.getElementById('vConsent').checked,
+        observacoes: document.getElementById('vObs').value,
+        foto: document.getElementById('vFoto').value || ''
+      });
+      alert('Visitante cadastrado!');
+      document.getElementById('formCard').style.display = 'none';
+      e.target.reset();
+      render();
+    }
+
+    function render() {
+      let list = IARCristo.getVisitantes().sort((a,b) => (b.dataVisita||'').localeCompare(a.dataVisita||''));
+      const filtro = document.getElementById('filtroSit').value;
+      if (filtro) list = list.filter(v => v.situacao === filtro);
+      document.getElementById('totalVis').textContent = list.length;
+
+      const tbody = document.getElementById('tabelaVis');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px" class="text-muted">Nenhum visitante</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(v => `
+        <tr>
+          <td><div class="flex items-center gap-2">${IARCristo.avatarHtml(v, 32)}<div><strong>${v.nome}</strong><br><span class="text-muted" style="font-size:0.8rem">${v.origem || ''}</span></div></div></td>
+          <td>${v.telefone || '—'}</td>
+          <td>${IARCristo.formatarData(v.dataVisita)}</td>
+          <td><span class="badge ${badgeSit(v.situacao)}">${v.situacao}</span></td>
+          <td>${nomeM(v.responsavelId)}</td>
+          <td>
+            ${v.situacao !== 'Convertido em membro' ? `
+              <button class="btn btn-sm btn-secondary" onclick="contato('${v.id}')">Contato</button>
+              <button class="btn btn-sm btn-primary" style="margin-left:4px" onclick="converter('${v.id}')">→ Membro</button>
+            ` : `<span class="text-muted">Membro: ${v.membroId || ''}</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function contato(id) {
+      const resumo = prompt('Resumo do contato realizado:');
+      if (!resumo) return;
+      const tipo = prompt('Tipo (WhatsApp, Ligação, Presencial):', 'WhatsApp') || 'WhatsApp';
+      IARCristo.registrarContatoVisitante(id, tipo, resumo);
+      alert('Contato registrado!');
+      render();
+    }
+
+    function converter(id) {
+      if (!confirm('Converter este visitante em membro (situação: Em Integração)?')) return;
+      const res = IARCristo.converterVisitanteEmMembro(id);
+      if (res.erro) { alert(res.erro); return; }
+      alert('Convertido! Código do membro: ' + res.membro.id);
+      render();
+    }
+
+    
+    let vStream = null;
+    function showVFoto(d) {
+      const img = document.getElementById('vFotoPreview');
+      const ph = document.getElementById('vFotoPh');
+      if (d) { img.src = d; img.style.display = 'block'; ph.style.display = 'none'; }
+      else { img.src = ''; img.style.display = 'none'; ph.style.display = 'block'; }
+    }
+    async function onVFoto(e) {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      try {
+        const d = await IARCristo.comprimirImagemArquivo(f);
+        document.getElementById('vFoto').value = d;
+        showVFoto(d);
+      } catch (err) { alert(err.message); }
+      e.target.value = '';
+    }
+    async function abrirCamV() {
+      try {
+        vStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        document.getElementById('vCamVideo').srcObject = vStream;
+        document.getElementById('vCamBox').style.display = 'block';
+      } catch (e) { alert('Câmera indisponível. Use arquivo.'); }
+    }
+    function fechaCamV() {
+      if (vStream) { vStream.getTracks().forEach(t => t.stop()); vStream = null; }
+      document.getElementById('vCamVideo').srcObject = null;
+      document.getElementById('vCamBox').style.display = 'none';
+    }
+    async function capVFoto() {
+      const v = document.getElementById('vCamVideo');
+      const c = document.getElementById('vCamCanvas');
+      if (!v.videoWidth) return;
+      c.width = v.videoWidth; c.height = v.videoHeight;
+      c.getContext('2d').drawImage(v, 0, 0);
+      const d = await IARCristo.comprimirImagemDataUrl(c.toDataURL('image/jpeg', 0.9));
+      document.getElementById('vFoto').value = d;
+      showVFoto(d);
+      fechaCamV();
+    }
+    function remVFoto() {
+      document.getElementById('vFoto').value = '';
+      showVFoto('');
+      fechaCamV();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('vResp').innerHTML = '<option value="">—</option>' +
+        IARCristo.getMembros().filter(m => m.situacao === 'Membro Ativo').map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+      render();
+    });
+  </script>
+</body>
+</html>
