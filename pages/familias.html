@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Famílias | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="membros.html" class="nav-item">Membros</a>
+          <a href="visitantes.html" class="nav-item">Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item">Departamentos</a>
+          <a href="familias.html" class="nav-item" active">Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item">Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item">Relatórios</a>
+        </div>
+</nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">WF</div>
+          <div class="user-details">
+            <div class="user-name">Wellington F. Vieira</div>
+            <div class="user-role">Pastor Presidente</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Famílias e Vínculos</h1>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Núcleos Familiares</h2>
+          </div>
+          <div class="card-body" id="listaFamilias">
+            <p class="text-muted">Carregando...</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Todos os Vínculos</h2>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Membro</th>
+                    <th>Vínculo</th>
+                    <th>Relacionado</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaVinculos"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const vinculos = IARCristo.getVinculos();
+      const membros = IARCristo.getMembros();
+      const byId = Object.fromEntries(membros.map(m => [m.id, m]));
+
+      // Agrupar por casais / núcleos simples (quem tem vínculo de Cônjuge)
+      const casais = vinculos.filter(v => v.tipo === 'Cônjuge');
+      const vistos = new Set();
+      let familiasHtml = '';
+
+      casais.forEach(v => {
+        const key = [v.membroId, v.relacionadoId].sort().join('-');
+        if (vistos.has(key)) return;
+        vistos.add(key);
+        const a = byId[v.membroId];
+        const b = byId[v.relacionadoId];
+        if (!a || !b) return;
+        familiasHtml += `
+          <div style="border:1px solid #E5E7EB;border-radius:12px;padding:16px;margin-bottom:14px;background:#FFFBF5">
+            <div style="font-weight:600;margin-bottom:8px;color:#E07B00">👨‍👩‍👧 Família</div>
+            <div style="display:flex;gap:20px;flex-wrap:wrap">
+              <div>
+                <a href="membro.html?id=${a.id}" style="font-weight:600;color:#111">${a.nome}</a>
+                <div class="text-muted" style="font-size:0.85rem">${a.ocupacao || a.cargoEclesiastico || a.situacao}</div>
+              </div>
+              <div style="color:#F7941D;font-weight:600">♥</div>
+              <div>
+                <a href="membro.html?id=${b.id}" style="font-weight:600;color:#111">${b.nome}</a>
+                <div class="text-muted" style="font-size:0.85rem">${b.ocupacao || b.cargoEclesiastico || b.situacao}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      if (!familiasHtml) {
+        familiasHtml = '<p class="text-muted">Nenhum núcleo familiar com vínculo de cônjuge cadastrado ainda. Abra a ficha de um membro e adicione vínculos.</p>';
+      }
+      document.getElementById('listaFamilias').innerHTML = familiasHtml;
+
+      // Tabela completa
+      const tbody = document.getElementById('tabelaVinculos');
+      if (vinculos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px" class="text-muted">Nenhum vínculo cadastrado</td></tr>';
+      } else {
+        tbody.innerHTML = vinculos.map(v => {
+          const m = byId[v.membroId];
+          const r = byId[v.relacionadoId];
+          return `<tr>
+            <td>${m ? `<a href="membro.html?id=${m.id}">${m.nome}</a>` : v.membroId}</td>
+            <td><span class="badge badge-info">${v.tipo}</span></td>
+            <td>${r ? `<a href="membro.html?id=${r.id}">${r.nome}</a>` : v.relacionadoId}</td>
+            <td><button class="btn btn-sm btn-secondary" onclick="if(confirm('Remover?')){IARCristo.removerVinculo('${v.id}');location.reload()}">Remover</button></td>
+          </tr>`;
+        }).join('');
+      }
+    });
+  </script>
+</body>
+</html>

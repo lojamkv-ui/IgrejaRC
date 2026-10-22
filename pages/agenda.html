@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda de Cultos | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .event-card {
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .event-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .event-card.confirmado { border-left: 4px solid #10B981; }
+    .event-card.planejado { border-left: 4px solid #3B82F6; }
+    .event-card.cancelado { border-left: 4px solid #EF4444; opacity: 0.7; }
+    .event-date {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #F7941D;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .event-title { font-size: 1.05rem; font-weight: 600; color: #111827; margin: 4px 0; }
+    .event-meta { font-size: 0.85rem; color: #6B7280; display: flex; flex-wrap: wrap; gap: 12px; }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .filter-bar select, .filter-bar input {
+      padding: 8px 12px;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .escala-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #FAFAFA;
+    }
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .modal-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body { padding: 22px; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="membros.html" class="nav-item">Membros</a>
+          <a href="visitantes.html" class="nav-item">Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item">Departamentos</a>
+          <a href="familias.html" class="nav-item">Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item" active">Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item">Relatórios</a>
+        </div>
+</nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">WF</div>
+          <div class="user-details">
+            <div class="user-name">Wellington F. Vieira</div>
+            <div class="user-role">Pastor Presidente</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Agenda de Cultos e Eventos</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="abrirModalEvento()">+ Novo Evento</button>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <div class="filter-bar">
+          <select id="filtroTipo" onchange="renderLista()">
+            <option value="">Todos os tipos</option>
+          </select>
+          <select id="filtroSituacao" onchange="renderLista()">
+            <option value="">Todas as situações</option>
+            <option>Planejado</option>
+            <option>Confirmado</option>
+            <option>Realizado</option>
+            <option>Cancelado</option>
+          </select>
+          <input type="month" id="filtroMes" onchange="renderLista()">
+          <span class="text-muted" id="contadorEventos" style="margin-left:auto;font-size:0.9rem"></span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:24px" class="agenda-grid">
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Lista de Eventos</h2>
+              </div>
+              <div class="card-body" id="listaEventos">
+                <p class="text-muted">Carregando...</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Próximos</h2>
+              </div>
+              <div class="card-body" id="proximosEventos"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Evento -->
+  <div class="modal-overlay" id="modalEvento">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 style="font-size:1.15rem;font-weight:600" id="modalTitulo">Novo Evento</h2>
+        <button class="btn btn-sm btn-secondary" onclick="fecharModal()">Fechar</button>
+      </div>
+      <div class="modal-body">
+        <form id="formEvento" onsubmit="salvarEvento(event)">
+          <input type="hidden" id="eventoId">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de Evento *</label>
+              <select id="evTipo" class="form-control" required onchange="if(!document.getElementById('evTitulo').value) document.getElementById('evTitulo').value=this.value"></select>
+            </div>
+            <div class="form-group">
+              <label>Título</label>
+              <input type="text" id="evTitulo" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Data *</label>
+              <input type="date" id="evData" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Início</label>
+              <input type="time" id="evHoraInicio" class="form-control" value="19:00">
+            </div>
+            <div class="form-group">
+              <label>Término</label>
+              <input type="time" id="evHoraFim" class="form-control" value="21:00">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Local</label>
+              <input type="text" id="evLocal" class="form-control" value="Templo Principal">
+            </div>
+            <div class="form-group">
+              <label>Situação</label>
+              <select id="evSituacao" class="form-control">
+                <option>Planejado</option>
+                <option>Confirmado</option>
+                <option>Realizado</option>
+                <option>Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Dirigente</label>
+              <select id="evDirigente" class="form-control"><option value="">—</option></select>
+            </div>
+            <div class="form-group">
+              <label>Pregador / Ministrante</label>
+              <select id="evPregador" class="form-control"><option value="">—</option></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tema</label>
+              <input type="text" id="evTema" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Referência Bíblica</label>
+              <input type="text" id="evRef" class="form-control" placeholder="Ex: João 3:16">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Descrição / Observações</label>
+            <textarea id="evObs" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="flex gap-3" style="margin-top:16px">
+            <button type="submit" class="btn btn-primary">Salvar Evento</button>
+            <button type="button" class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+          </div>
+        </form>
+
+        <!-- Escala (visível só na edição) -->
+        <div id="secaoEscala" style="display:none;margin-top:28px;border-top:1px solid #E5E7EB;padding-top:20px">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px">Escala de Participantes</h3>
+          <div id="listaEscala"></div>
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <label>Papel</label>
+              <select id="escPapel" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label>Membro</label>
+              <select id="escMembro" class="form-control"></select>
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end">
+              <button type="button" class="btn btn-primary btn-sm" onclick="addEscala()">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    function nomeMembro(id) {
+      if (!id) return '—';
+      const m = IARCristo.getMembro(id);
+      return m ? m.nome : id;
+    }
+
+    function diaSemana(dataStr) {
+      const d = new Date(dataStr + 'T12:00:00');
+      return d.toLocaleDateString('pt-BR', { weekday: 'short' });
+    }
+
+    function renderLista() {
+      const tipo = document.getElementById('filtroTipo').value;
+      const sit = document.getElementById('filtroSituacao').value;
+      const mes = document.getElementById('filtroMes').value;
+
+      let eventos = IARCristo.getEventos().sort((a,b) => a.data.localeCompare(b.data) || a.horaInicio.localeCompare(b.horaInicio));
+
+      if (tipo) eventos = eventos.filter(e => e.tipo === tipo);
+      if (sit) eventos = eventos.filter(e => e.situacao === sit);
+      if (mes) eventos = eventos.filter(e => e.data.startsWith(mes));
+
+      document.getElementById('contadorEventos').textContent = eventos.length + ' evento(s)';
+
+      const el = document.getElementById('listaEventos');
+      if (eventos.length === 0) {
+        el.innerHTML = '<p class="text-muted" style="text-align:center;padding:30px">Nenhum evento encontrado</p>';
+        return;
+      }
+
+      el.innerHTML = eventos.map(e => {
+        const cls = (e.situacao || '').toLowerCase();
+        return `
+          <div class="event-card ${cls}" onclick="abrirModalEvento('${e.id}')">
+            <div class="event-date">${diaSemana(e.data)} · ${IARCristo.formatarData(e.data)} · ${e.horaInicio}${e.horaFim ? ' – ' + e.horaFim : ''}</div>
+            <div class="event-title">${e.titulo || e.tipo}</div>
+            <div class="event-meta">
+              <span>${e.local || ''}</span>
+              <span>Dirigente: ${nomeMembro(e.dirigenteId)}</span>
+              <span class="badge ${IARCristo.badgeSituacaoEvento(e.situacao)}">${e.situacao}</span>
+            </div>
+            ${e.tema ? `<div style="margin-top:6px;font-size:0.85rem;color:#6B7280">Tema: ${e.tema}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderProximos() {
+      const prox = IARCristo.getProximosEventos(5);
+      const el = document.getElementById('proximosEventos');
+      if (prox.length === 0) {
+        el.innerHTML = '<p class="text-muted">Nenhum evento próximo</p>';
+        return;
+      }
+      el.innerHTML = prox.map(e => `
+        <div style="padding:10px 0;border-bottom:1px solid #F3F4F6;cursor:pointer" onclick="abrirModalEvento('${e.id}')">
+          <div style="font-weight:600;font-size:0.9rem">${e.titulo || e.tipo}</div>
+          <div class="text-muted" style="font-size:0.8rem">${IARCristo.formatarData(e.data)} · ${e.horaInicio}</div>
+        </div>
+      `).join('');
+    }
+
+    function preencherSelects() {
+      const tipos = IARCristo.TIPOS_EVENTO;
+      document.getElementById('filtroTipo').innerHTML = '<option value="">Todos os tipos</option>' + tipos.map(t => `<option>${t}</option>`).join('');
+      document.getElementById('evTipo').innerHTML = tipos.map(t => `<option>${t}</option>`).join('');
+
+      const membros = IARCristo.getMembros().filter(m => m.situacao === 'Membro Ativo' || m.situacao === 'Em Integração');
+      const opts = membros.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+      document.getElementById('evDirigente').innerHTML = '<option value="">—</option>' + opts;
+      document.getElementById('evPregador').innerHTML = '<option value="">—</option>' + opts;
+      document.getElementById('escMembro').innerHTML = opts;
+      document.getElementById('escPapel').innerHTML = IARCristo.PAPEIS_ESCALA.map(p => `<option>${p}</option>`).join('');
+
+      // mês atual
+      const agora = new Date();
+      document.getElementById('filtroMes').value = agora.getFullYear() + '-' + String(agora.getMonth()+1).padStart(2,'0');
+    }
+
+    function abrirModalEvento(id = null) {
+      document.getElementById('formEvento').reset();
+      document.getElementById('eventoId').value = '';
+      document.getElementById('secaoEscala').style.display = 'none';
+      document.getElementById('evHoraInicio').value = '19:00';
+      document.getElementById('evHoraFim').value = '21:00';
+      document.getElementById('evLocal').value = 'Templo Principal';
+
+      if (id) {
+        const e = IARCristo.getEvento(id);
+        if (!e) return;
+        document.getElementById('modalTitulo').textContent = 'Editar Evento';
+        document.getElementById('eventoId').value = e.id;
+        document.getElementById('evTipo').value = e.tipo;
+        document.getElementById('evTitulo').value = e.titulo || '';
+        document.getElementById('evData').value = e.data;
+        document.getElementById('evHoraInicio').value = e.horaInicio || '19:00';
+        document.getElementById('evHoraFim').value = e.horaFim || '';
+        document.getElementById('evLocal').value = e.local || '';
+        document.getElementById('evSituacao').value = e.situacao || 'Planejado';
+        document.getElementById('evDirigente').value = e.dirigenteId || '';
+        document.getElementById('evPregador').value = e.pregadorId || '';
+        document.getElementById('evTema').value = e.tema || '';
+        document.getElementById('evRef').value = e.referenciaBiblica || '';
+        document.getElementById('evObs').value = e.observacoes || e.descricao || '';
+        document.getElementById('secaoEscala').style.display = 'block';
+        renderEscala(e.id);
+      } else {
+        document.getElementById('modalTitulo').textContent = 'Novo Evento';
+        document.getElementById('evData').value = new Date().toISOString().slice(0,10);
+      }
+      document.getElementById('modalEvento').classList.add('open');
+    }
+
+    function fecharModal() {
+      document.getElementById('modalEvento').classList.remove('open');
+    }
+
+    function salvarEvento(ev) {
+      ev.preventDefault();
+      const dados = {
+        tipo: document.getElementById('evTipo').value,
+        titulo: document.getElementById('evTitulo').value || document.getElementById('evTipo').value,
+        data: document.getElementById('evData').value,
+        horaInicio: document.getElementById('evHoraInicio').value,
+        horaFim: document.getElementById('evHoraFim').value,
+        local: document.getElementById('evLocal').value,
+        situacao: document.getElementById('evSituacao').value,
+        dirigenteId: document.getElementById('evDirigente').value,
+        pregadorId: document.getElementById('evPregador').value,
+        tema: document.getElementById('evTema').value,
+        referenciaBiblica: document.getElementById('evRef').value,
+        observacoes: document.getElementById('evObs').value
+      };
+      const id = document.getElementById('eventoId').value;
+      if (id) {
+        IARCristo.atualizarEvento(id, dados);
+        alert('Evento atualizado!');
+      } else {
+        const novo = IARCristo.adicionarEvento(dados);
+        alert('Evento criado!');
+        document.getElementById('eventoId').value = novo.id;
+        document.getElementById('secaoEscala').style.display = 'block';
+        renderEscala(novo.id);
+      }
+      renderLista();
+      renderProximos();
+      if (!id) return; // keep modal open to add scale
+      fecharModal();
+    }
+
+    function renderEscala(eventoId) {
+      const escalas = IARCristo.getEscalasDoEvento(eventoId);
+      const el = document.getElementById('listaEscala');
+      if (escalas.length === 0) {
+        el.innerHTML = '<p class="text-muted" style="font-size:0.9rem">Ninguém escalado ainda.</p>';
+        return;
+      }
+      el.innerHTML = escalas.map(s => `
+        <div class="escala-item">
+          <div>
+            <strong>${s.papel}</strong> — ${nomeMembro(s.membroId)}
+            ${s.confirmado ? '<span class="badge badge-success" style="margin-left:8px">Confirmado</span>' : '<span class="badge badge-warning" style="margin-left:8px">Pendente</span>'}
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();toggleConfirma('${s.id}')">${s.confirmado ? 'Desconfirmar' : 'Confirmar'}</button>
+            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();rmEscala('${s.id}')">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addEscala() {
+      const eventoId = document.getElementById('eventoId').value;
+      if (!eventoId) { alert('Salve o evento primeiro'); return; }
+      const papel = document.getElementById('escPapel').value;
+      const membroId = document.getElementById('escMembro').value;
+      const res = IARCristo.adicionarEscala(eventoId, papel, membroId);
+      if (res.erro) { alert(res.erro); return; }
+      renderEscala(eventoId);
+    }
+
+    function rmEscala(id) {
+      if (!confirm('Remover da escala?')) return;
+      IARCristo.removerEscala(id);
+      renderEscala(document.getElementById('eventoId').value);
+    }
+
+    function toggleConfirma(id) {
+      const escalas = IARCristo.getEscalas();
+      const s = escalas.find(e => e.id === id);
+      if (!s) return;
+      IARCristo.confirmarEscala(id, !s.confirmado);
+      renderEscala(document.getElementById('eventoId').value);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      preencherSelects();
+      renderLista();
+      renderProximos();
+    });
+
+    // fechar modal ao clicar fora
+    document.getElementById('modalEvento').addEventListener('click', e => {
+      if (e.target.id === 'modalEvento') fecharModal();
+    });
+  </script>
+  <style>
+    @media (max-width: 900px) {
+      .agenda-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departamentos e Cargos | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .tabs { display:flex; gap:4px; border-bottom:1px solid #E5E7EB; margin-bottom:20px; flex-wrap:wrap; }
+    .tab { padding:10px 16px; font-size:0.9rem; font-weight:500; color:#6B7280; cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; }
+    .tab.active { color:#E07B00; border-bottom-color:#F7941D; }
+    .tab-panel { display:none; } .tab-panel.active { display:block; }
+    .depto-card { border:1px solid #E5E7EB; border-radius:12px; padding:16px; margin-bottom:12px; background:#fff; }
+    .depto-card h3 { font-size:1.05rem; margin-bottom:4px; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="membros.html" class="nav-item">Membros</a>
+          <a href="visitantes.html" class="nav-item">Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item" active">Departamentos</a>
+          <a href="familias.html" class="nav-item">Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item">Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item">Relatórios</a>
+        </div>
+</nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">WF</div>
+          <div class="user-details">
+            <div class="user-name">Wellington F. Vieira</div>
+            <div class="user-role">Pastor Presidente</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Departamentos e Cargos</h1>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('deptos')">Departamentos</button>
+          <button class="tab" onclick="showTab('cargos')">Cargos Eclesiásticos</button>
+          <button class="tab" onclick="showTab('adm')">Cargos Administrativos</button>
+          <button class="tab" onclick="showTab('ocup')">Ocupações Ministeriais</button>
+        </div>
+
+        <!-- DEPTOS -->
+        <div id="tab-deptos" class="tab-panel active">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Departamentos / Ministérios</h2>
+              <button class="btn btn-sm btn-primary" onclick="document.getElementById('formDepto').style.display='block'">+ Novo</button>
+            </div>
+            <div class="card-body">
+              <div id="formDepto" style="display:none;margin-bottom:20px;padding:16px;background:#FFF7ED;border-radius:10px">
+                <div class="form-row">
+                  <div class="form-group"><label>Nome *</label><input id="depNome" class="form-control"></div>
+                  <div class="form-group"><label>Descrição</label><input id="depDesc" class="form-control"></div>
+                  <div class="form-group"><label>Responsável</label><select id="depResp" class="form-control"></select></div>
+                  <div class="form-group" style="display:flex;align-items:flex-end">
+                    <button class="btn btn-primary" onclick="salvarDepto()">Salvar</button>
+                    <button class="btn btn-secondary" style="margin-left:8px" onclick="document.getElementById('formDepto').style.display='none'">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+              <div id="listaDeptos"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARGOS EC -->
+        <div id="tab-cargos" class="tab-panel">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Cargos Eclesiásticos</h2>
+            </div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group"><label>Novo cargo</label><input id="novoCe" class="form-control" placeholder="Ex: Evangelista"></div>
+                <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="addCargo('ec','novoCe')">Adicionar</button></div>
+              </div>
+              <div id="listaCe"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARGOS ADM -->
+        <div id="tab-adm" class="tab-panel">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Cargos Administrativos</h2></div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group"><label>Novo cargo</label><input id="novoCa" class="form-control" placeholder="Ex: Auxiliar de Secretaria"></div>
+                <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="addCargo('adm','novoCa')">Adicionar</button></div>
+              </div>
+              <div id="listaCa"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OCUPAÇÕES -->
+        <div id="tab-ocup" class="tab-panel">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Ocupações Ministeriais</h2></div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom:16px">
+                <div class="form-group"><label>Nova ocupação</label><input id="novoOc" class="form-control" placeholder="Ex: Líder de Ação Social"></div>
+                <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="addCargo('oc','novoOc')">Adicionar</button></div>
+              </div>
+              <div id="listaOc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    function showTab(nome) {
+      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['deptos','cargos','adm','ocup'][i] === nome));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + nome).classList.add('active');
+    }
+
+    function nomeM(id) {
+      const m = IARCristo.getMembro(id);
+      return m ? m.nome : '—';
+    }
+
+    function renderDeptos() {
+      const deptos = IARCristo.getDeptos().filter(d => d.situacao === 'Ativo');
+      const el = document.getElementById('listaDeptos');
+      el.innerHTML = deptos.map(d => {
+        const parts = IARCristo.getParticipacoesDoDepto(d.id);
+        return `<div class="depto-card">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3>${d.nome}</h3>
+              <div class="text-muted" style="font-size:0.85rem">${d.descricao || ''}</div>
+              <div style="margin-top:6px;font-size:0.85rem">Responsável: <strong>${nomeM(d.responsavelId)}</strong> · ${parts.length} participante(s)</div>
+            </div>
+          </div>
+          ${parts.length ? '<div style="margin-top:12px;padding-top:10px;border-top:1px solid #F3F4F6">' + parts.map(p =>
+            `<div class="flex justify-between items-center" style="padding:4px 0;font-size:0.9rem">
+              <span>${nomeM(p.membroId)} <span class="badge badge-info">${p.funcao}</span></span>
+              <button class="btn btn-sm btn-secondary" onclick="encerrarPart('${p.id}')">Encerrar</button>
+            </div>`
+          ).join('') + '</div>' : ''}
+          <div class="form-row" style="margin-top:12px">
+            <div class="form-group">
+              <select id="partM-${d.id}" class="form-control">${IARCristo.getMembros().filter(m=>m.situacao==='Membro Ativo').map(m=>`<option value="${m.id}">${m.nome}</option>`).join('')}</select>
+            </div>
+            <div class="form-group">
+              <input id="partF-${d.id}" class="form-control" placeholder="Função (ex: Líder)" value="Membro">
+            </div>
+            <div class="form-group" style="display:flex;align-items:flex-end">
+              <button class="btn btn-sm btn-primary" onclick="addPart('${d.id}')">+ Participante</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function salvarDepto() {
+      const nome = document.getElementById('depNome').value.trim();
+      if (!nome) { alert('Informe o nome'); return; }
+      IARCristo.adicionarDepto({
+        nome,
+        descricao: document.getElementById('depDesc').value,
+        responsavelId: document.getElementById('depResp').value
+      });
+      document.getElementById('formDepto').style.display = 'none';
+      document.getElementById('depNome').value = '';
+      renderDeptos();
+    }
+
+    function addPart(deptoId) {
+      const membroId = document.getElementById('partM-' + deptoId).value;
+      const funcao = document.getElementById('partF-' + deptoId).value || 'Membro';
+      const res = IARCristo.adicionarParticipacao(deptoId, membroId, funcao);
+      if (res.erro) alert(res.erro); else renderDeptos();
+    }
+
+    function encerrarPart(id) {
+      if (!confirm('Encerrar participação?')) return;
+      IARCristo.encerrarParticipacao(id);
+      renderDeptos();
+    }
+
+    function renderCargos(tipo, elId) {
+      const getters = { ec: IARCristo.getCargosEc, adm: IARCristo.getCargosAdm, oc: IARCristo.getOcupacoes };
+      const list = getters[tipo]().filter(c => c.situacao === 'Ativo');
+      document.getElementById(elId).innerHTML = `
+        <div class="table-responsive"><table>
+          <thead><tr><th>Nome</th><th>Ações</th></tr></thead>
+          <tbody>${list.map(c => `<tr>
+            <td><strong>${c.nome}</strong></td>
+            <td><button class="btn btn-sm btn-secondary" onclick="inativar('${tipo}','${c.id}')">Inativar</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>`;
+    }
+
+    function addCargo(tipo, inputId) {
+      const nome = document.getElementById(inputId).value.trim();
+      if (!nome) { alert('Informe o nome'); return; }
+      const res = IARCristo.adicionarCargo(tipo, nome);
+      if (res.erro) { alert(res.erro); return; }
+      document.getElementById(inputId).value = '';
+      renderCargos('ec','listaCe');
+      renderCargos('adm','listaCa');
+      renderCargos('oc','listaOc');
+    }
+
+    function inativar(tipo, id) {
+      if (!confirm('Inativar este item?')) return;
+      IARCristo.inativarCargo(tipo, id);
+      renderCargos('ec','listaCe');
+      renderCargos('adm','listaCa');
+      renderCargos('oc','listaOc');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const opts = IARCristo.getMembros().filter(m => m.situacao === 'Membro Ativo').map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+      document.getElementById('depResp').innerHTML = '<option value="">—</option>' + opts;
+      renderDeptos();
+      renderCargos('ec','listaCe');
+      renderCargos('adm','listaCa');
+      renderCargos('oc','listaOc');
+      if (location.hash === '#cargos') showTab('cargos');
+    });
+  </script>
+</body>
+</html>

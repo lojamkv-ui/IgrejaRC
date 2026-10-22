@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | IARCristo - Igreja Renascendo em Cristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .login-error {
+      background: #FEF2F2;
+      color: #DC2626;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .login-hint {
+      margin-top: 20px;
+      padding: 14px;
+      background: #FFF7ED;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #9A3412;
+      text-align: left;
+    }
+    .login-hint code {
+      background: #FFEDD5;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <img src="../public/assets/logo.png" alt="Igreja Renascendo em Cristo" class="login-logo">
+      <h1 class="login-title">IARCristo</h1>
+      <p class="login-subtitle">Sistema de Gestão Eclesiástica</p>
+
+      <div class="login-error" id="erroMsg"></div>
+
+      <form id="formLogin" onsubmit="fazerLogin(event)">
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" class="form-control" placeholder="seu@email.com" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="btnLogin">
+          Entrar no Sistema
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <p style="margin-top: 8px; font-size: 0.8rem;">
+          Igreja Renascendo em Cristo<br>
+          Trindade - GO
+        </p>
+      </div>
+
+      <div class="login-hint">
+        <strong>Usuários de demonstração:</strong><br>
+        Pastor: <code>pastor@iarcristo.local</code> / <code>pastor123</code><br>
+        Secretaria: <code>secretaria@iarcristo.local</code> / <code>secretaria123</code><br>
+        Admin: <code>admin@iarcristo.local</code> / <code>admin123</code><br>
+        Consulta: <code>consulta@iarcristo.local</code> / <code>consulta123</code>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    // Se já estiver logado, vai direto ao dashboard
+    if (IARCristo.estaAutenticado()) {
+      const params = new URLSearchParams(location.search);
+      location.href = params.get('redirect') || 'dashboard.html';
+    }
+
+    function fazerLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+      const erroEl = document.getElementById('erroMsg');
+      const btn = document.getElementById('btnLogin');
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+
+      const res = IARCristo.login(email, senha);
+      if (res.erro) {
+        erroEl.textContent = res.erro;
+        erroEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Entrar no Sistema';
+        return;
+      }
+
+      const params = new URLSearchParams(location.search);
+      location.href = params.get('redirect') || 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

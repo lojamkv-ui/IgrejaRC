@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuários | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="membros.html" class="nav-item">Membros</a>
+          <a href="visitantes.html" class="nav-item">Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item">Departamentos</a>
+          <a href="familias.html" class="nav-item">Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item">Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item">Relatórios</a>
+          <a href="usuarios.html" class="nav-item active">Usuários</a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">—</div>
+          <div class="user-details">
+            <div class="user-name">—</div>
+            <div class="user-role">—</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Usuários e Acessos</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="abrirForm()">+ Novo Usuário</button>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <div class="card" id="formCard" style="display:none;margin-bottom:24px">
+          <div class="card-header">
+            <h2 class="card-title" id="formTitulo">Registrar Usuário</h2>
+            <button class="btn btn-sm btn-secondary" onclick="fecharForm()">Fechar</button>
+          </div>
+          <div class="card-body">
+            <form onsubmit="salvarUsuario(event)">
+              <input type="hidden" id="userId">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Vincular a membro (opcional)</label>
+                  <select id="uMembro" class="form-control" onchange="preencherDoMembro()">
+                    <option value="">— Sem vínculo —</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Nome *</label>
+                  <input id="uNome" class="form-control" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>E-mail (login) *</label>
+                  <input id="uEmail" type="email" class="form-control" required placeholder="pessoa@email.com">
+                </div>
+                <div class="form-group">
+                  <label>Senha *</label>
+                  <input id="uSenha" type="password" class="form-control" placeholder="mín. 6 caracteres" autocomplete="new-password">
+                  <small class="text-muted" id="senhaHint">Obrigatória no cadastro. Deixe em branco ao editar para manter.</small>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Perfil de acesso *</label>
+                  <select id="uPerfil" class="form-control" required></select>
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;padding-top:28px">
+                  <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                    <input type="checkbox" id="uAtivo" checked> Usuário ativo
+                  </label>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="button" class="btn btn-secondary" onclick="fecharForm()">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Usuários cadastrados <span id="totalU" class="badge badge-gray"></span></h2>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Perfil</th>
+                    <th>Membro vinculado</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaUsers"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:24px">
+          <div class="card-header">
+            <h2 class="card-title">Permissões por perfil</h2>
+          </div>
+          <div class="card-body" style="padding:0;overflow-x:auto">
+            <table id="tbPerms">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    if (!IARCristo.pode('usuarios')) {
+      alert('Você não tem permissão para gerenciar usuários.');
+      location.href = 'dashboard.html';
+    }
+
+    const LABELS_PERM = {
+      membros_ver: 'Ver membros', membros_criar: 'Criar membros', membros_editar: 'Editar membros',
+      membros_excluir: 'Excluir membros', visitantes: 'Visitantes', familias: 'Famílias',
+      departamentos: 'Departamentos', cargos: 'Cargos', agenda: 'Agenda', escalas: 'Escalas',
+      relatorios: 'Relatórios', usuarios: 'Usuários', config: 'Configurações'
+    };
+
+    function abrirForm(id) {
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('userId').value = '';
+      document.getElementById('uNome').value = '';
+      document.getElementById('uEmail').value = '';
+      document.getElementById('uSenha').value = '';
+      document.getElementById('uSenha').required = true;
+      document.getElementById('senhaHint').textContent = 'Obrigatória no cadastro. Mínimo 6 caracteres.';
+      document.getElementById('uAtivo').checked = true;
+      document.getElementById('uMembro').value = '';
+      document.getElementById('formTitulo').textContent = 'Registrar Usuário';
+      if (id) {
+        const u = IARCristo.getUsuarios().find(x => x.id === id);
+        if (!u) return;
+        document.getElementById('formTitulo').textContent = 'Editar Usuário';
+        document.getElementById('userId').value = u.id;
+        document.getElementById('uNome').value = u.nome;
+        document.getElementById('uEmail').value = u.email;
+        document.getElementById('uSenha').required = false;
+        document.getElementById('senhaHint').textContent = 'Deixe em branco para manter a senha atual.';
+        document.getElementById('uPerfil').value = u.perfil;
+        document.getElementById('uAtivo').checked = u.ativo;
+        document.getElementById('uMembro').value = u.membroId || '';
+      }
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function fecharForm() {
+      document.getElementById('formCard').style.display = 'none';
+    }
+
+    function preencherDoMembro() {
+      const mid = document.getElementById('uMembro').value;
+      if (!mid) return;
+      const m = IARCristo.getMembro(mid);
+      if (!m) return;
+      document.getElementById('uNome').value = m.nome;
+      if (m.email) document.getElementById('uEmail').value = m.email;
+    }
+
+    function salvarUsuario(e) {
+      e.preventDefault();
+      const id = document.getElementById('userId').value;
+      const dados = {
+        nome: document.getElementById('uNome').value.trim(),
+        email: document.getElementById('uEmail').value.trim(),
+        perfil: document.getElementById('uPerfil').value,
+        ativo: document.getElementById('uAtivo').checked,
+        membroId: document.getElementById('uMembro').value,
+        senha: document.getElementById('uSenha').value
+      };
+
+      let res;
+      if (id) {
+        if (!dados.senha) delete dados.senha;
+        res = IARCristo.atualizarUsuario(id, dados);
+      } else {
+        res = IARCristo.registrarUsuario(dados);
+      }
+      if (res.erro) { alert(res.erro); return; }
+      alert(id ? 'Usuário atualizado!' : 'Usuário cadastrado com sucesso!');
+      fecharForm();
+      render();
+    }
+
+    function render() {
+      const users = IARCristo.getUsuarios();
+      document.getElementById('totalU').textContent = users.length;
+      document.getElementById('tabelaUsers').innerHTML = users.map(u => {
+        const m = u.membroId ? IARCristo.getMembro(u.membroId) : null;
+        const perfilNome = (IARCristo.PERFIS[u.perfil] || {}).nome || u.perfil;
+        return `<tr>
+          <td><strong>${u.nome}</strong></td>
+          <td>${u.email}</td>
+          <td><span class="badge badge-info">${perfilNome}</span></td>
+          <td>${m ? m.nome + ' (' + m.id + ')' : '—'}</td>
+          <td>${u.ativo ? '<span class="badge badge-success">Ativo</span>' : '<span class="badge badge-danger">Inativo</span>'}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="abrirForm('${u.id}')">Editar</button>
+            ${u.ativo ? `<button class="btn btn-sm btn-secondary" style="margin-left:4px" onclick="desativar('${u.id}')">Desativar</button>` : ''}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function desativar(id) {
+      if (!confirm('Desativar este usuário?')) return;
+      const res = IARCristo.desativarUsuario(id);
+      if (res.erro) { alert(res.erro); return; }
+      render();
+    }
+
+    function renderPerms() {
+      const perms = Object.keys(LABELS_PERM);
+      const perfis = Object.keys(IARCristo.PERFIS);
+      const thead = document.querySelector('#tbPerms thead');
+      const tbody = document.querySelector('#tbPerms tbody');
+      thead.innerHTML = '<tr><th>Permissão</th>' + perfis.map(p => `<th style="font-size:0.75rem">${IARCristo.PERFIS[p].nome}</th>`).join('') + '</tr>';
+      tbody.innerHTML = perms.map(perm => {
+        return '<tr><td>' + LABELS_PERM[perm] + '</td>' + perfis.map(p => {
+          const ok = IARCristo.PERMISSOES[p] && IARCristo.PERMISSOES[p][perm];
+          return `<td style="text-align:center">${ok ? '✅' : '—'}</td>`;
+        }).join('') + '</tr>';
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('uPerfil').innerHTML = Object.entries(IARCristo.PERFIS)
+        .map(([k, v]) => `<option value="${k}">${v.nome}</option>`).join('');
+      document.getElementById('uMembro').innerHTML = '<option value="">— Sem vínculo —</option>' +
+        IARCristo.getMembros().map(m => `<option value="${m.id}">${m.nome} (${m.id})</option>`).join('');
+      render();
+      renderPerms();
+    });
+  </script>
+</body>
+</html>

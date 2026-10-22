@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha do Membro | IARCristo</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .profile-header {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F7941D, #E85D04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .profile-info h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+    .profile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #6B7280;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: #E5E7EB;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      padding-bottom: 4px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #F7941D;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #FED7AA;
+    }
+    .timeline-date {
+      font-size: 0.8rem;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+    .timeline-desc {
+      font-size: 0.95rem;
+      color: #374151;
+    }
+    .family-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      background: #FAFAFA;
+    }
+    .family-card .avatar-sm {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F7941D, #E85D04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid #E5E7EB;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #6B7280;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .tab.active {
+      color: #E07B00;
+      border-bottom-color: #F7941D;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="../public/assets/logo.png" alt="Logo" class="sidebar-logo">
+        <div class="sidebar-brand">IARCristo<span>Renascendo em Cristo</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <a href="dashboard.html" class="nav-item">Dashboard</a>
+          <a href="membros.html" class="nav-item" active">Membros</a>
+          <a href="visitantes.html" class="nav-item">Visitantes</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Organização</div>
+          <a href="departamentos.html" class="nav-item">Departamentos</a>
+          <a href="familias.html" class="nav-item">Famílias</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Agenda</div>
+          <a href="agenda.html" class="nav-item">Cultos & Eventos</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Sistema</div>
+          <a href="relatorios.html" class="nav-item">Relatórios</a>
+        </div>
+</nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">WF</div>
+          <div class="user-details">
+            <div class="user-name">Wellington F. Vieira</div>
+            <div class="user-role">Pastor Presidente</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <div class="flex items-center gap-3">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="topbar-title">Ficha do Membro</h1>
+        </div>
+        <div class="topbar-actions">
+          <a href="membros.html" class="btn btn-sm btn-secondary">← Voltar</a>
+          <button class="btn btn-sm btn-primary" id="btnEditar">Editar</button>
+          <button class="btn btn-sm btn-secondary" id="btnLoginMembro" style="display:none" onclick="criarLoginMembro()">Criar login</button>
+        </div>
+      </header>
+
+      <div class="content-area" id="conteudo">
+        <p class="text-muted">Carregando...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const membroId = params.get('id');
+
+    function iniciais(nome) {
+      return (nome || '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    function render() {
+      const m = IARCristo.getMembro(membroId);
+      if (!m) {
+        document.getElementById('conteudo').innerHTML = '<div class="card"><div class="card-body"><p>Membro não encontrado.</p><a href="membros.html" class="btn btn-primary">Voltar</a></div></div>';
+        return;
+      }
+
+      document.getElementById('btnEditar').onclick = () => location.href = 'membros.html?editar=' + m.id;
+
+      const vinculos = IARCristo.getVinculosDoMembro(m.id);
+      const historico = IARCristo.getHistoricoDoMembro(m.id);
+
+      let familiaHtml = '';
+      if (vinculos.length === 0) {
+        familiaHtml = '<p class="text-muted">Nenhum vínculo familiar cadastrado.</p>';
+      } else {
+        familiaHtml = vinculos.map(v => {
+          const rel = IARCristo.getMembro(v.relacionadoId);
+          const nomeRel = rel ? rel.nome : v.relacionadoId;
+          return `
+            <div class="family-card">
+              <div class="avatar-sm">${iniciais(nomeRel)}</div>
+              <div style="flex:1">
+                <div style="font-weight:600">${nomeRel}</div>
+                <div class="text-muted" style="font-size:0.85rem">${v.tipo}</div>
+              </div>
+              ${rel ? `<a href="membro.html?id=${rel.id}" class="btn btn-sm btn-secondary">Ver</a>` : ''}
+              <button class="btn btn-sm btn-secondary" onclick="removerVinculo('${v.id}')" title="Remover">✕</button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      let histHtml = '';
+      if (historico.length === 0) {
+        histHtml = '<p class="text-muted">Nenhum evento registrado.</p>';
+      } else {
+        histHtml = '<div class="timeline">' + historico.map(h => `
+          <div class="timeline-item">
+            <div class="timeline-date">${IARCristo.formatarData(h.data)} · <span class="badge ${IARCristo.badgeCategoria(h.categoria)}">${h.categoria}</span></div>
+            <div class="timeline-desc">${h.descricao}</div>
+            <div class="text-muted" style="font-size:0.8rem;margin-top:2px">por ${h.responsavel || '—'}</div>
+          </div>
+        `).join('') + '</div>';
+      }
+
+      // Select de membros para novo vínculo
+      const outros = IARCristo.getMembros().filter(x => x.id !== m.id);
+      const optsMembros = outros.map(x => `<option value="${x.id}">${x.nome} (${x.id})</option>`).join('');
+      const optsTipos = IARCristo.TIPOS_VINCULO.map(t => `<option value="${t}">${t}</option>`).join('');
+
+      document.getElementById('conteudo').innerHTML = `
+        <div class="profile-header">
+          <div class="profile-avatar">${iniciais(m.nome)}</div>
+          <div class="profile-info" style="flex:1">
+            <h1>${m.nome}</h1>
+            <div><span class="badge ${IARCristo.badgeSituacao(m.situacao)}">${m.situacao}</span></div>
+            <div class="profile-meta">
+              <span>📋 ${m.id}</span>
+              <span>📞 ${IARCristo.formatarTelefone(m.telefone)}</span>
+              ${m.ocupacao ? `<span>✝️ ${m.ocupacao}</span>` : ''}
+              ${m.cargoEclesiastico ? `<span>⛪ ${m.cargoEclesiastico}</span>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="trocarTab('dados')">Dados</button>
+          <button class="tab" onclick="trocarTab('familia')">Família (${vinculos.length})</button>
+          <button class="tab" onclick="trocarTab('historico')">Histórico (${historico.length})</button>
+        </div>
+
+        <div id="tab-dados" class="tab-content active">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Dados Pessoais</h2></div>
+            <div class="card-body">
+              <div class="form-row">
+                <div><strong>Data de Nascimento</strong><br>${IARCristo.formatarData(m.dataNascimento)}</div>
+                <div><strong>Estado Civil</strong><br>${m.estadoCivil || '—'}</div>
+                <div><strong>E-mail</strong><br>${m.email || '—'}</div>
+              </div>
+              <div class="form-row" style="margin-top:16px">
+                <div><strong>Endereço</strong><br>${m.endereco || '—'}, ${m.bairro || ''} - ${m.cidade || ''}/${m.estado || ''}</div>
+                <div><strong>CEP</strong><br>${m.cep || '—'}</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Informações Eclesiásticas</h2></div>
+            <div class="card-body">
+              <div class="form-row">
+                <div><strong>Ingresso</strong><br>${IARCristo.formatarData(m.dataIngresso)} (${m.formaIngresso || '—'})</div>
+                <div><strong>Batismo</strong><br>${m.batismo || '—'} ${m.dataBatismo ? '(' + IARCristo.formatarData(m.dataBatismo) + ')' : ''}</div>
+                <div><strong>Igreja de Origem</strong><br>${m.igrejaOrigem || '—'}</div>
+              </div>
+              <div class="form-row" style="margin-top:16px">
+                <div><strong>Cargo Eclesiástico</strong><br>${m.cargoEclesiastico || '—'}</div>
+                <div><strong>Cargo Administrativo</strong><br>${m.cargoAdministrativo || '—'}</div>
+                <div><strong>Ocupação</strong><br>${m.ocupacao || '—'}</div>
+              </div>
+              ${m.observacoes ? `<p style="margin-top:16px"><strong>Observações:</strong> ${m.observacoes}</p>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-familia" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Vínculos Familiares</h2>
+            </div>
+            <div class="card-body">
+              ${familiaHtml}
+              <hr style="margin:20px 0;border:none;border-top:1px solid #E5E7EB">
+              <h3 style="font-size:1rem;margin-bottom:12px">Adicionar vínculo</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Parente / Relacionado</label>
+                  <select id="novoRelacionado" class="form-control">${optsMembros}</select>
+                </div>
+                <div class="form-group">
+                  <label>Tipo de vínculo</label>
+                  <select id="novoTipo" class="form-control">${optsTipos}</select>
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end">
+                  <button class="btn btn-primary" onclick="salvarVinculo()">Adicionar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-historico" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Histórico Individual</h2>
+            </div>
+            <div class="card-body">
+              ${histHtml}
+              <hr style="margin:20px 0;border:none;border-top:1px solid #E5E7EB">
+              <h3 style="font-size:1rem;margin-bottom:12px">Registrar novo evento</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Data</label>
+                  <input type="date" id="histData" class="form-control" value="${new Date().toISOString().slice(0,10)}">
+                </div>
+                <div class="form-group">
+                  <label>Categoria</label>
+                  <select id="histCategoria" class="form-control">
+                    ${IARCristo.CATEGORIAS_HISTORICO.map(c => `<option value="${c}">${c}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Descrição</label>
+                <input type="text" id="histDescricao" class="form-control" placeholder="Descreva o evento...">
+              </div>
+              <button class="btn btn-primary" onclick="salvarHistorico()">Adicionar ao Histórico</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function trocarTab(nome) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', t.textContent.toLowerCase().includes(nome === 'dados' ? 'dados' : nome === 'familia' ? 'família' : 'histórico') || (nome === 'familia' && t.textContent.includes('Família')) || (nome === 'historico' && t.textContent.includes('Histórico')) || (nome === 'dados' && t.textContent === 'Dados'));
+      });
+      // simpler approach
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const map = { dados: 0, familia: 1, historico: 2 };
+      document.querySelectorAll('.tab')[map[nome]].classList.add('active');
+      document.getElementById('tab-' + nome).classList.add('active');
+    }
+
+    function salvarVinculo() {
+      const relId = document.getElementById('novoRelacionado').value;
+      const tipo = document.getElementById('novoTipo').value;
+      const res = IARCristo.adicionarVinculo(membroId, relId, tipo);
+      if (res.erro) {
+        alert(res.erro);
+        return;
+      }
+      alert('Vínculo adicionado!');
+      render();
+      trocarTab('familia');
+    }
+
+    function removerVinculo(id) {
+      if (!confirm('Remover este vínculo?')) return;
+      IARCristo.removerVinculo(id);
+      render();
+      trocarTab('familia');
+    }
+
+    function salvarHistorico() {
+      const descricao = document.getElementById('histDescricao').value.trim();
+      if (!descricao) { alert('Informe a descrição'); return; }
+      IARCristo.adicionarHistorico(membroId, {
+        data: document.getElementById('histData').value,
+        categoria: document.getElementById('histCategoria').value,
+        descricao,
+        responsavel: 'Usuário'
+      });
+      alert('Evento registrado!');
+      render();
+      trocarTab('historico');
+    }
+
+    
+    function criarLoginMembro() {
+      if (!IARCristo.pode('usuarios')) { alert('Sem permissão para criar usuários.'); return; }
+      const m = IARCristo.getMembro(membroId);
+      if (!m) return;
+      if (IARCristo.getUsuarioPorMembro(membroId)) { alert('Este membro já possui login.'); return; }
+      const email = prompt('E-mail para login:', m.email || '');
+      if (!email) return;
+      const senha = prompt('Senha inicial (mín. 6 caracteres):', 'membro123');
+      if (!senha) return;
+      const perfil = prompt('Perfil (consulta, lideranca, secretaria, pastor, portaria, tesouraria, administracao):', 'consulta') || 'consulta';
+      const res = IARCristo.criarLoginParaMembro(membroId, email, senha, perfil);
+      if (res.erro) { alert(res.erro); return; }
+      alert('Login criado!\nE-mail: ' + email + '\nSenha: ' + senha + '\nPerfil: ' + perfil);
+      atualizarBtnLogin();
+    }
+
+    function atualizarBtnLogin() {
+      const btn = document.getElementById('btnLoginMembro');
+      if (!btn) return;
+      if (IARCristo.pode('usuarios') && !IARCristo.getUsuarioPorMembro(membroId)) {
+        btn.style.display = 'inline-flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { render(); atualizarBtnLogin(); });
+  </script>
+</body>
+</html>
