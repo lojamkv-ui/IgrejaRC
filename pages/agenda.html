@@ -283,6 +283,11 @@
             </div>
           </div>
 
+          <div id="acoesArte" class="flex gap-2" style="margin-top:16px;flex-wrap:wrap;display:none">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="copiarInfoEvento(this)">📋 Copiar informações</button>
+            <button type="button" class="btn btn-sm btn-primary" style="background:linear-gradient(135deg,#7c3aed,#db2777);border:0" onclick="copiarPromptFlyer(this)">🎨 Copiar prompt para flyer</button>
+          </div>
+
           <div class="flex gap-3" style="margin-top:16px">
             <button type="submit" class="btn btn-primary">Salvar Evento</button>
             <button type="button" class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
@@ -402,6 +407,7 @@
       document.getElementById('formEvento').reset();
       document.getElementById('eventoId').value = '';
       document.getElementById('secaoEscala').style.display = 'none';
+      document.getElementById('acoesArte').style.display = 'none';
       document.getElementById('evHoraInicio').value = '19:00';
       document.getElementById('evHoraFim').value = '21:00';
       document.getElementById('evLocal').value = 'Templo Principal';
@@ -438,6 +444,7 @@
         renderExtraPreviews();
         document.getElementById('secaoEscala').style.display = 'block';
         renderEscala(e.id);
+        document.getElementById('acoesArte').style.display = 'flex';
       } else {
         document.getElementById('modalTitulo').textContent = 'Novo Evento';
         document.getElementById('evData').value = new Date().toISOString().slice(0,10);
@@ -595,6 +602,95 @@
       arr.splice(i, 1);
       document.getElementById('evFotosExtra').value = JSON.stringify(arr);
       renderExtraPreviews();
+    }
+
+    // ---- Copiar informações e prompt para flyer (Canva manual) ----
+    const DIAS_SEMANA = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+
+    function dataExtenso(iso) {
+      if (!iso) return '';
+      const [a, m, d] = iso.split('-').map(Number);
+      const dia = new Date(a, m - 1, d).getDay();
+      return `${DIAS_SEMANA[dia]}, ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${a}`;
+    }
+
+    function dadosDoEvento(id) {
+      const e = IARCristo.getEvento(id);
+      if (!e) return null;
+      return {
+        titulo: e.titulo || e.tipo || 'Evento',
+        tipo: e.tipo || '',
+        data: dataExtenso(e.data),
+        horario: [e.horaInicio, e.horaFim].filter(Boolean).join(' às '),
+        local: e.local || '',
+        dirigente: e.dirigenteId ? nomeMembro(e.dirigenteId) : '',
+        pregador: e.pregadorId ? nomeMembro(e.pregadorId) : '',
+        tema: e.tema || '',
+        referencia: e.referenciaBiblica || '',
+        observacoes: e.observacoes || e.descricao || ''
+      };
+    }
+
+    function textoInformacoes(d) {
+      const linhas = [
+        `📅 ${d.titulo}`,
+        d.tipo && d.tipo !== d.titulo ? `Tipo: ${d.tipo}` : null,
+        d.data ? `Data: ${d.data}` : null,
+        d.horario ? `Horário: ${d.horario}` : null,
+        d.local ? `Local: ${d.local}` : null,
+        d.dirigente ? `Dirigente: ${d.dirigente}` : null,
+        d.pregador ? `Pregador: ${d.pregador}` : null,
+        d.tema ? `Tema: ${d.tema}` : null,
+        d.referencia ? `Referência bíblica: ${d.referencia}` : null,
+        d.observacoes ? `\nObservações: ${d.observacoes}` : null
+      ];
+      return linhas.filter(Boolean).join('\n');
+    }
+
+    function textoPromptFlyer(d) {
+      const linhas = [
+        `Crie um flyer vertical (1080 x 1350 px) no Canva para o evento abaixo de uma igreja evangélica.`,
+        ``,
+        `Estilo: elegante, moderno e acolhedor, com fundo em gradiente suave, tipografia clara e elementos gráficos discretos (luz, linhas finas ou formas orgânicas). Evite excesso de elementos e garanta bom contraste para leitura no celular.`,
+        d.tema ? `Tema visual: ${d.tema}. Use esse tema como inspiração para cores e ilustrações.` : `Tema visual: celebração e fé, com tons de vinho, dourado e branco.`,
+        ``,
+        `Textos do flyer (use exatamente estas informações):`,
+        `- Título: ${d.titulo}`,
+        d.data ? `- Data: ${d.data}` : null,
+        d.horario ? `- Horário: ${d.horario}` : null,
+        d.local ? `- Local: ${d.local}` : null,
+        d.pregador ? `- Pregador: ${d.pregador}` : null,
+        d.dirigente ? `- Dirigente: ${d.dirigente}` : null,
+        d.referencia ? `- Versículo: ${d.referencia}` : null,
+        ``,
+        `Deixe um espaço reservado no topo ou no centro para a foto do pregador, se houver. Coloque o nome da igreja ("Igreja Renascendo em Cristo") no rodapé em tamanho discreto.`
+      ];
+      return linhas.filter(v => v !== null).join('\n');
+    }
+
+    async function copiarTexto(texto, botao) {
+      try {
+        await navigator.clipboard.writeText(texto);
+      } catch (_) {
+        const ta = document.createElement('textarea');
+        ta.value = texto; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); ta.remove();
+      }
+      const original = botao.textContent;
+      botao.textContent = '✓ Copiado!';
+      setTimeout(() => botao.textContent = original, 1800);
+    }
+
+    function copiarInfoEvento(botao) {
+      const id = document.getElementById('eventoId').value;
+      const d = dadosDoEvento(id);
+      if (d) copiarTexto(textoInformacoes(d), botao);
+    }
+
+    function copiarPromptFlyer(botao) {
+      const id = document.getElementById('eventoId').value;
+      const d = dadosDoEvento(id);
+      if (d) copiarTexto(textoPromptFlyer(d), botao);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
