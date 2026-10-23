@@ -11,7 +11,7 @@ const STORAGE_HISTORICO = 'iarcristo_historico';
 // ========== DADOS INICIAIS ==========
 const MEMBROS_INICIAIS = [
   {
-    id: 'MRC-0001', nome: 'Wellington Felicio Vieira', nomeSocial: '', dataNascimento: '1978-05-12',
+    id: 'MRC-0001', nome: 'Wellington Felicio Vieira', dataNascimento: '1978-05-12',
     estadoCivil: 'Casado(a)', cpf: '', telefone: '(62) 99154-2563', whatsapp: '(62) 99154-2563',
     email: 'sede.renascendoemcristo@gmail.com', endereco: 'R. Nicanor Albernaz, QD. 02 LT. 01',
     bairro: 'Setor Cristina', cidade: 'Trindade', estado: 'GO', cep: '75383-579',
@@ -22,7 +22,7 @@ const MEMBROS_INICIAIS = [
     criadoEm: '2015-01-10T10:00:00.000Z', atualizadoEm: new Date().toISOString()
   },
   {
-    id: 'MRC-0042', nome: 'Maria Aparecida Santos', nomeSocial: '', dataNascimento: '1984-10-24',
+    id: 'MRC-0042', nome: 'Maria Aparecida Santos', dataNascimento: '1984-10-24',
     estadoCivil: 'Casado(a)', cpf: '', telefone: '(62) 99876-5432', whatsapp: '(62) 99876-5432',
     email: '', endereco: '', bairro: 'Setor Cristina', cidade: 'Trindade', estado: 'GO', cep: '',
     situacao: 'Membro Ativo', dataIngresso: '2018-03-20', formaIngresso: 'Conversão',
@@ -32,7 +32,7 @@ const MEMBROS_INICIAIS = [
     criadoEm: '2018-03-20T10:00:00.000Z', atualizadoEm: new Date().toISOString()
   },
   {
-    id: 'MRC-0087', nome: 'João da Silva Oliveira', nomeSocial: '', dataNascimento: '1991-03-15',
+    id: 'MRC-0087', nome: 'João da Silva Oliveira', dataNascimento: '1991-03-15',
     estadoCivil: 'Casado(a)', cpf: '', telefone: '(62) 98765-4321', whatsapp: '(62) 98765-4321',
     email: '', endereco: '', bairro: '', cidade: 'Trindade', estado: 'GO', cep: '',
     situacao: 'Membro Ativo', dataIngresso: '2019-07-14', formaIngresso: 'Transferência',
@@ -42,7 +42,7 @@ const MEMBROS_INICIAIS = [
     criadoEm: '2019-07-14T10:00:00.000Z', atualizadoEm: new Date().toISOString()
   },
   {
-    id: 'MRC-0115', nome: 'Ana Clara Ferreira', nomeSocial: '', dataNascimento: '2007-10-31',
+    id: 'MRC-0115', nome: 'Ana Clara Ferreira', dataNascimento: '2007-10-31',
     estadoCivil: 'Solteiro(a)', cpf: '', telefone: '(62) 99654-3210', whatsapp: '(62) 99654-3210',
     email: '', endereco: '', bairro: '', cidade: 'Trindade', estado: 'GO', cep: '',
     situacao: 'Em Integração', dataIngresso: '2026-09-05', formaIngresso: 'Conversão',
@@ -52,7 +52,7 @@ const MEMBROS_INICIAIS = [
     criadoEm: '2026-09-05T10:00:00.000Z', atualizadoEm: new Date().toISOString()
   },
   {
-    id: 'MRC-0130', nome: 'Pedro Rocha Costa', nomeSocial: '', dataNascimento: '1998-11-05',
+    id: 'MRC-0130', nome: 'Pedro Rocha Costa', dataNascimento: '1998-11-05',
     estadoCivil: 'Solteiro(a)', cpf: '', telefone: '(62) 98543-2109', whatsapp: '(62) 98543-2109',
     email: '', endereco: '', bairro: '', cidade: 'Trindade', estado: 'GO', cep: '',
     situacao: 'Afastado', dataIngresso: '2021-02-18', formaIngresso: 'Conversão',
@@ -62,7 +62,7 @@ const MEMBROS_INICIAIS = [
     criadoEm: '2021-02-18T10:00:00.000Z', atualizadoEm: new Date().toISOString()
   },
   {
-    id: 'MRC-0043', nome: 'Carlos Eduardo Santos', nomeSocial: '', dataNascimento: '1982-07-08',
+    id: 'MRC-0043', nome: 'Carlos Eduardo Santos', dataNascimento: '1982-07-08',
     estadoCivil: 'Casado(a)', cpf: '', telefone: '(62) 99123-4567', whatsapp: '(62) 99123-4567',
     email: '', endereco: '', bairro: 'Setor Cristina', cidade: 'Trindade', estado: 'GO', cep: '',
     situacao: 'Membro Ativo', dataIngresso: '2018-03-20', formaIngresso: 'Conversão',
@@ -116,7 +116,10 @@ function _save(key, data) {
 }
 
 // ========== MEMBROS ==========
-function getMembros() { return _get(STORAGE_MEMBROS, MEMBROS_INICIAIS); }
+// Nome social foi removido do sistema: descarta o campo dos registros antigos
+function getMembros() {
+  return _get(STORAGE_MEMBROS, MEMBROS_INICIAIS).map(({ nomeSocial, ...m }) => m);
+}
 function saveMembros(m) { _save(STORAGE_MEMBROS, m); }
 
 function gerarCodigo() {

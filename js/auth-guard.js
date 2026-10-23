@@ -88,36 +88,40 @@
     }
     const sidebar = document.getElementById('sidebar');
     const toggles = document.querySelectorAll('.menu-toggle');
+    if (!sidebar) return;
 
-    function close() {
-      if (sidebar) sidebar.classList.remove('open');
-      backdrop.classList.remove('open');
-      backdrop.setAttribute('aria-hidden', 'true');
-    }
-    function open() {
-      if (sidebar) sidebar.classList.add('open');
-      backdrop.classList.add('open');
-      backdrop.setAttribute('aria-hidden', 'false');
+    function setOpen(isOpen) {
+      sidebar.classList.toggle('open', isOpen);
+      backdrop.classList.toggle('open', isOpen);
+      backdrop.setAttribute('aria-hidden', String(!isOpen));
+      toggles.forEach(btn => btn.setAttribute('aria-expanded', String(isOpen)));
     }
 
     toggles.forEach(btn => {
-      btn.setAttribute('aria-label', 'Abrir ou fechar menu');
+      if (btn.dataset.menuBound) return;   // evita registrar o clique duas vezes
+      btn.dataset.menuBound = '1';
       btn.addEventListener('click', function (e) {
         e.preventDefault();
-        if (sidebar && sidebar.classList.contains('open')) close();
-        else open();
+        setOpen(!sidebar.classList.contains('open'));
       });
     });
-    backdrop.addEventListener('click', close);
 
-    // close on nav click (mobile)
-    if (sidebar) {
-      sidebar.querySelectorAll('a.nav-item').forEach(a => {
-        a.addEventListener('click', function () {
-          if (window.innerWidth <= 1024) close();
-        });
+    backdrop.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+
+    // fecha ao navegar no menu (mobile)
+    sidebar.querySelectorAll('a.nav-item').forEach(a => {
+      a.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) setOpen(false);
       });
-    }
+    });
+
+    // se voltar para desktop, limpa o estado aberto
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) setOpen(false);
+    });
   }
 
   function init() {

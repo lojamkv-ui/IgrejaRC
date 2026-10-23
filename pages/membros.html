@@ -55,7 +55,7 @@
     <div class="main-content">
       <header class="topbar">
         <div class="flex items-center gap-3">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <button type="button" class="menu-toggle" aria-label="Abrir ou fechar menu" aria-expanded="false" aria-controls="sidebar">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
           <h1 class="topbar-title">Cadastro de Membros</h1>
@@ -178,10 +178,6 @@
                   <div class="form-group">
                     <label>Nome Completo *</label>
                     <input type="text" id="nome" class="form-control" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Nome Social</label>
-                    <input type="text" id="nomeSocial" class="form-control">
                   </div>
                 </div>
                 <div class="form-row">
@@ -441,7 +437,6 @@
       abrirFormulario(id);
       document.getElementById('membroId').value = m.id;
       document.getElementById('nome').value = m.nome || '';
-      document.getElementById('nomeSocial').value = m.nomeSocial || '';
       document.getElementById('dataNascimento').value = m.dataNascimento || '';
       document.getElementById('estadoCivil').value = m.estadoCivil || '';
       document.getElementById('cpf').value = m.cpf || '';
@@ -477,7 +472,6 @@
       e.preventDefault();
       const dados = {
         nome: document.getElementById('nome').value.trim(),
-        nomeSocial: document.getElementById('nomeSocial').value.trim(),
         dataNascimento: document.getElementById('dataNascimento').value,
         estadoCivil: document.getElementById('estadoCivil').value,
         cpf: document.getElementById('cpf').value.trim(),
