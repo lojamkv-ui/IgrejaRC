@@ -816,7 +816,7 @@ function exportarCSV(linhas, nomeArquivo) {
 
 
 // ========== AUTENTICAÇÃO ==========
-const STORAGE_USERS = 'iarcristo_usuarios';
+const STORAGE_USERS = 'iarcristo_usuarios_v2';
 const STORAGE_SESSION = 'iarcristo_sessao';
 
 const PERFIS = {
